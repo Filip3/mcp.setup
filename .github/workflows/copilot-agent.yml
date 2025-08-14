@@ -1,0 +1,44 @@
+name: Copilot Agent C# Issue Handler
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  copilot-agent:
+    if: contains(github.event.issue.labels.*.name, 'copilot-agent') || 
+        contains(github.event.comment.body, '@copilot-agent')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore HelloYallNerds/
+        
+      - name: Build
+        run: dotnet build HelloYallNerds/ --no-restore
+        
+      - name: Test
+        run: dotnet test HelloYallNerds/ --no-build --verbosity normal
+        
+      - name: Trigger Copilot Agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo "C# Issue #$ISSUE_NUMBER assigned to Copilot agent"
+          echo "Title: ${{ github.event.issue.title }}"
+          echo "Body: ${{ github.event.issue.body }}"
+          echo "Ready for C# implementation!"
