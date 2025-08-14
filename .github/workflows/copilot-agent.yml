@@ -37,8 +37,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           echo "C# Issue #$ISSUE_NUMBER assigned to Copilot agent"
-          echo "Title: ${{ github.event.issue.title }}"
-          echo "Body: ${{ github.event.issue.body }}"
+          echo "Title: $ISSUE_TITLE"
+          echo "Body: $ISSUE_BODY"
           echo "Ready for C# implementation!"
